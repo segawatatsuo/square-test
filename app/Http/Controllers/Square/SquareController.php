@@ -9,12 +9,16 @@ use Square\SquareClient;// SquareClient クラスをuseしていることを確�
 
 class SquareController extends Controller
 {
+    protected $client;
     public function __construct()
     {
-        $this->client = new SquareClient([
-            'accessToken' => env('SQUARE_ACCESS_TOKEN'),
-            'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'),
-        ]);
+        $this->client = new SquareClient(
+            env('SQUARE_ACCESS_TOKEN'), // 最初の引数としてアクセストークンを直接渡す
+            null, // 2番目の引数（バージョン）は通常nullでOK
+            [
+                'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'),
+            ]
+        );
     }
 
 
