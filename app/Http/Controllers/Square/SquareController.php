@@ -11,10 +11,10 @@ class SquareController extends Controller
 {
     public function __construct()
     {
-        $this->client = new SquareClient([
-            'accessToken' => config('services.square.token'),
-            'environment' => config('services.square.env'),
-        ]);
+        $this->client = SquareClient::builder()
+            ->accessToken(env('SQUARE_ACCESS_TOKEN'))
+            ->environment(env('SQUARE_ENVIRONMENT', 'sandbox'))
+            ->build();
     }
 
 
