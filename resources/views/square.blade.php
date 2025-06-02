@@ -37,7 +37,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    url: '/api/v1/square/payment',
+                    url: '{{ url('/api/v1/square/payment') }}',//絶対パスに変換しないとサブディレクトリが認識されない
                     data: JSON.stringify({
                         locationId,
                         sourceId: token,
