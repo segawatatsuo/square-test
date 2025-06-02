@@ -5,51 +5,65 @@ namespace App\Http\Controllers\Square;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
-use Square\SquareClient;// SquareClient クラスをuseしていることを確認
+use Square\SquareClient;
 use Square\Models\Money;
-use Square\Models\CreatePaymentRequest; // 必要に応じて
+use Square\Models\CreatePaymentRequest;
+use Square\Environments; // Environments クラスをuseしていることを確認
 
 class SquareController extends Controller
 {
     protected $client;
+
     public function __construct()
     {
-        $this->client = new SquareClient(
-            env('SQUARE_ACCESS_TOKEN'), // 最初の引数としてアクセストークンを直接渡す
-            null, // 2番目の引数（バージョン）は通常nullでOK
-            [
-                'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'),
-            ]
-        );
-    }
+        // 環境変数の値を取得
+        $squareEnvironment = env('SQUARE_ENVIRONMENT', 'sandbox');
+        $accessToken = env('SQUARE_ACCESS_TOKEN');
 
+        // 環境に対応するbaseUrlを設定
+        $baseUrl = $squareEnvironment === 'production' ? Environments::Production->value : Environments::Sandbox->value;
+
+        $this->client = new SquareClient([
+            'token' => $accessToken,
+            'baseUrl' => $baseUrl,
+        ]);
+    }
 
     public function createPayment(Request $req)
     {
         try {
-
             $data = $req->all();
 
-            $amountMoney = new \Square\Models\Money();
-            $amountMoney->setAmount(2500);
+            // 金額をint型で設定
+            $amountMoney = new Money();
+            $amountMoney->setAmount(2500); // 2500円
             $amountMoney->setCurrency('JPY');
 
-            $body = new \Square\Models\CreatePaymentRequest(
+            $idempotencyKey = Str::uuid()->toString();
+
+            $body = new CreatePaymentRequest(
                 $data['sourceId'],
-                Str::uuid()->toString(),
+                $idempotencyKey
             );
 
             $body->setAmountMoney($amountMoney);
+
+            // 必要に応じて、locationIdを設定
+            // $body->setLocationId($data['locationId']); // フロントエンドからlocationIdが渡されている場合
 
             $res = $this->client->getPaymentsApi()->createPayment($body);
 
             if ($res->isSuccess()) {
                 return response()->json($res->getResult());
             } else {
-                throw new \Exception();
+                $errors = $res->getErrors();
+                // エラーログの出力や、より詳細なエラーメッセージの返却を検討
+                \Log::error('Square Payment Error: ' . json_encode($errors));
+                return response()->json(['errors' => $errors], 500);
             }
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+            \Log::error('Square Payment Exception: ' . $e->getMessage());
+            return response()->json(['error' => 'An unexpected error occurred.'], 500);
         }
     }
 }
