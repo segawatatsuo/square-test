@@ -23,6 +23,15 @@ class SquareController extends Controller
         // 環境に対応するbaseUrlを設定
         $baseUrl = $squareEnvironment === 'production' ? Environments::Production->value : Environments::Sandbox->value;
 
+    // ここに一時的に追加
+    dd([
+        'accessToken' => $accessToken,
+        'baseUrl' => $baseUrl,
+        'accessToken_type' => gettype($accessToken),
+        'baseUrl_type' => gettype($baseUrl),
+    ]);
+
+
         $this->client = new SquareClient([
             'token' => $accessToken,
             'baseUrl' => $baseUrl,
