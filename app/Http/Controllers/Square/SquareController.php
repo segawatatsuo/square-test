@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Square\SquareClient;// SquareClient クラスをuseしていることを確認
+use Square\Models\Money;
+use Square\Models\CreatePaymentRequest; // 必要に応じて
 
 class SquareController extends Controller
 {
