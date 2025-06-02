@@ -30,11 +30,19 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    /*
     'square' => [
         'env' => env('SQUARE_ENVIRONMENT'),
         'application_id' => env('SQUARE_APPLICATION_ID'),
         'token' => env('SQUARE_ACCESS_TOKEN'),
         'location_id'    => env('SQUARE_LOCATION_ID'),
+    ],
+    */
+        'square' => [
+        'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'), // デフォルト値を指定しておくと安心
+        'application_id' => env('SQUARE_APPLICATION_ID'),
+        'access_token' => env('SQUARE_ACCESS_TOKEN'),
+        'location_id' => env('SQUARE_LOCATION_ID'),
     ],
 
 ];
