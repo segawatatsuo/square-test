@@ -16,6 +16,7 @@ class SquareController extends Controller
 
     public function __construct()
     {
+        exit('Hello, Debug!'); // これを追加
         // 環境変数の値を取得
         $squareEnvironment = env('SQUARE_ENVIRONMENT', 'sandbox');
         $accessToken = env('SQUARE_ACCESS_TOKEN');
