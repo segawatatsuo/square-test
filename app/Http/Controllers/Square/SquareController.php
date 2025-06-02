@@ -5,16 +5,16 @@ namespace App\Http\Controllers\Square;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
-use Square\SquareClient;
+use Square\SquareClient;// SquareClient クラスをuseしていることを確認
 
 class SquareController extends Controller
 {
     public function __construct()
     {
-        $this->client = SquareClient::builder()
-            ->accessToken(env('SQUARE_ACCESS_TOKEN'))
-            ->environment(env('SQUARE_ENVIRONMENT', 'sandbox'))
-            ->build();
+        $this->client = new SquareClient([
+            'accessToken' => env('SQUARE_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'),
+        ]);
     }
 
 
